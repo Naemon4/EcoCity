@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="perfilStyles.css">
+    <link rel="stylesheet" href="generalStyles.css">
+    <link rel="stylesheet" href="fontStyles.css">
+    <script src="criarHeaderFooter.js"></script>
+    <title>Perfil</title>
+</head>
+<body>
+
+    <header id="header" onload="criarHeader()"></header>
+    
+
+    <main>
+
+        <section class="profile-container">
+            <h2>Meu perfil</h2>
+            <section class="profile-info">
+                <div class="profile-image">
+                    <img id="profileImage" src="default-profile.png" alt="Foto de perfil">
+                    <label for="imageUpload" class="change-photo">Alterar foto</label>
+                    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                </div>
+                <form id="profileForm">
+                    <p>Nome: <input type="text" id="nomeInput" value=""></p>
+                    <p>Email: <input type="email" id="emailInput" value=""></p>
+                    <p>Telefone: <input type="tel" id="telefoneInput" value=""></p>
+                    <p>Rua: <input type="text" id="ruaInput" value=""></p>
+                    <p>Número: <input type="text" id="numeroInput" value=""></p>
+                    <p>Bairro: <input type="text" id="bairroInput" value=""></p>
+                    <button type="submit">Salvar Alterações</button>
+                </form>
+            </section>
+            <h3><a href="suasPostagens.html">Minhas Postagens</a></h3>
+        </section>
+        
+    </main>
+
+    
+    <footer id="footer"></footer>
+
+</body>
+<script src="perfilScript.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        criarHeader();
+        criarFooter();
+    });
+</script>
+<script src="logoutScript.js"></script>
+</html>

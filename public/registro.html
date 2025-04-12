@@ -3,54 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="registroStyles.css">
+    <link rel="stylesheet" href="generalStyles.css">
+    <link rel="stylesheet" href="fontStyles.css">
+    <script src="criarHeaderFooter.js"></script>
     <title>Registro</title>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <ul>
-                <li>Home</li>
-                <li></li>
-                <li><span><a href="criarPostagens.html"><img src="img/addIcon.png" alt="Criar post"></a></span>Perfil</li>
-            </ul>
-        </nav>
-    </header>
-    <hr>
+    <header id="header" onload="criarHeader()"></header>
+    
 
     <main>
 
         <h2>Registre-se na EcoCity!</h2>
 
         <section>
-            <form action="">
+            <form action="/users" method="post">
                 <label for="nome">Nome completo:</label>
-                <input type="text" name="nome" id="nomeInput">
+                <input type="text" name="nome" id="nomeInput" required>
         
                 <label for="email">Email:</label>
-                <input type="email" name="email" id="emailInput">
+                <input type="email" name="email" id="emailInput" required>
     
                 <label for="senha">Senha:</label>
                 <input type="password" name="senha" id="senhaInput">
         
                 <label for="confirmarSenha">Confirmar Senha:</label>
-                <input type="password" name="confirmarSenha" id="conSenhaInput">
+                <input type="password" name="confirmarSenha" id="conSenhaInput" required>
         
                 <label for="telefone">Telefone:</label>
-                <input type="tel" name="telefone" id="telefoneInput">
+                <input type="tel" name="telefone" id="telefoneInput" required>
         
                 <label for="bairro">Bairro:</label>
-                <input type="text" name="bairro" id="bairroInput">
+                <input type="text" name="bairro" id="bairroInput" required>
         
                 <label for="rua">Rua:</label>
-                <input type="text" name="rua" id="ruaInput">
+                <input type="text" name="rua" id="ruaInput" required>
         
                 <label for="numero">Número:</label>
-                <input type="text" name="numero" id="numeroInput">
+                <input type="text" name="numero" id="numeroInput" required>
         
                 <label for="cpf">CPF:</label>
-                <input type="text" name="cpf" id="cpfInput">
+                <input type="text" name="cpf" id="cpfInput" required>
         
                 <input type="submit" value="Registrar">
             </form>
@@ -58,16 +53,15 @@
         </section>
     </main>
 
-    <hr>
-    <footer>
-        <h4>Contatos:</h4>
-        <ul>
-            <li>12 34567-8900</li>
-            <li>EcoCity@ecocity.com</li>
-            <li><a href="https://www.instagram.com"><img src="img/insta.png" alt="link instagram"></a></li>
-            <li><a href="https://www.x.com"><img src="img/X.png" alt="link twitter"></a></li>
-        </ul>
-    </footer>
+    
+    <footer id="footer"></footer>
 
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        criarHeader();
+        criarFooter();
+    });
+</script>
+<script src="logoutScript.js"></script>
 </html>

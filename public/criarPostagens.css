@@ -1,0 +1,74 @@
+textarea{
+
+    height: 500px;
+    background-color: #205011;
+    width: 400px;
+
+}
+
+main h2{
+
+    text-align: center;
+    margin: 30px;
+
+}
+
+form{
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    
+}
+
+form input{
+
+    max-width: 300px;
+    width: 100%;
+    font-size: 20px;
+    height: 30px;
+    border-radius: 5px;
+    border-style: none;
+    background-color: #205011;
+
+}
+
+
+
+form input:focus{
+
+    background-color: white;
+
+}
+
+
+
+form label{
+
+    margin-bottom: -10px;
+
+}
+
+section{
+
+    background-color: #d4f4af;
+    margin: 50px;
+    margin-top: 0;
+    padding: 30px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px;
+
+}
+
+section p {
+
+    margin-top: 30px;
+
+}
+  
