@@ -1,8 +1,8 @@
 function criarHeader() {
-    let header = document.getElementById('header');
-    const userLoggedIn = localStorage.getItem('userId');
-    if (userLoggedIn) {
-        header.innerHTML = `
+  const header = document.getElementById('header');
+  const userLoggedIn = localStorage.getItem('userId');
+  if (userLoggedIn) {
+    header.innerHTML = `
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -12,9 +12,8 @@ function criarHeader() {
         </nav>
         <hr>
         `;
-    }else{
-
-        header.innerHTML = `
+  } else {
+    header.innerHTML = `
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -24,14 +23,12 @@ function criarHeader() {
         </nav>
         <hr>
         `;
-
-    }
-    
+  }
 }
 
 function criarFooter() {
-    let footer = document.getElementById('footer');
-    footer.innerHTML = `
+  const footer = document.getElementById('footer');
+  footer.innerHTML = `
         <hr>
         <h4>Contatos:</h4>
         <ul>

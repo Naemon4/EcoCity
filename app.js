@@ -1,30 +1,29 @@
+const { escreveNoJson } = require('./processaDados.js');
 const express = require('express');
-const session = require('express-session'); //usando ele para mantes a sessão de um user ativa
+const session = require('express-session'); // usando ele para mantes a sessão de um user ativa
 const path = require('path');
 const fs = require('fs');
+
 const app = express();
 const PORT = 3000;
 
-
 app.use(session({
-  secret: 'ecocity2025',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-      secure: false, // set to true if using https
-      maxAge: 24 * 60 * 60 * 1000 // 24 horas
-  }
+    secret: 'ecocity2025',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // set to true if using https
+        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+    },
 }));
 
 // Middleware para servir arquivos estáticos da pasta "public"
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // Middleware para processar dados enviados via formulário (x-www-form-urlencoded)
 app.use(express.urlencoded({ extended: true }));
 // Middleware para processar JSON
 app.use(express.json());
-
 
 // Rotas para as paginas
 app.get('/registro', (req, res) => {
@@ -32,7 +31,7 @@ app.get('/registro', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 app.get('/meusPosts', (req, res) => {
@@ -40,23 +39,23 @@ app.get('/meusPosts', (req, res) => {
 });
 
 app.get('/post', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'post.html'));
+    res.sendFile(path.join(__dirname, 'public', 'post.html'));
 });
 
 app.get('/perfil', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'perfil.html'));
+    res.sendFile(path.join(__dirname, 'public', 'perfil.html'));
 });
 
 app.get('/posts', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/editarPerfil', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'editarPerfil.html'));
+    res.sendFile(path.join(__dirname, 'public', 'editarPerfil.html'));
 });
 
 app.get('/criarPost', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'criarPostagens.html'));
+    res.sendFile(path.join(__dirname, 'public', 'criarPostagens.html'));
 });
 
 // Adicionar no início do arquivo, após as configurações iniciais
@@ -73,37 +72,14 @@ if (!fs.existsSync(usersFilePath)) {
     fs.writeFileSync(usersFilePath, '[]', 'utf8');
 }
 
-// Rota GET para buscar os responsáveis e retornar em JSON
-// app.get('/api/responsaveis', (req, res) => {
-//     const filePath = path.join(__dirname, 'data', 'responsaveis.json');
-//     fs.readFile(filePath, 'utf8', (err, data) => {
-//         if (err) {
-//             console.error('Erro ao ler o arquivo de responsáveis:', err);
-//             return res.status(500).json({ success: false, message: 'Erro ao obter responsáveis.' });
-//         }
-
-
-//         try {
-//             const responsaveis = JSON.parse(data);
-//             return res.status(200).json({ success: true, responsaveis });
-//         } catch (parseError) {
-//             console.error('Erro ao fazer o parsing do JSON:', parseError);
-//             return res.status(500).json({ success: false, message: 'Erro ao processar os responsáveis.' });
-//         }
-//     });
-// });
-
-
 app.get('/api/posts', (req, res) => {
     const tarefasFilePath = path.join(__dirname, 'data', 'posts.json');
-
 
     fs.readFile(tarefasFilePath, 'utf8', (err, data) => {
         if (err) {
             console.error('Erro ao ler o arquivo de posts:', err);
             return res.status(500).json({ success: false, message: 'Erro ao processar os posts.' });
         }
-
 
         let tarefas = [];
         try {
@@ -115,204 +91,208 @@ app.get('/api/posts', (req, res) => {
             return res.status(500).json({ success: false, message: 'Erro ao processar os posts.' });
         }
 
-
         return res.status(200).json({ success: true, tarefas });
     });
 });
 
-
-// Rota POST para cadastrar um novo user e salva-lo no JSON
-app.post('/users', (req, res) => {
-    const { nome, email, senha, confirmarSenha, telefone,
-      bairro, rua, numero, cpf
-     } = req.body;
+function validateData(data) {
+    const {
+        nome, email, senha, confirmarSenha, telefone,
+        bairro, rua, numero, cpf,
+    } = data;
 
     // Verificações de campos obrigatórios
-    if (!nome || !email || !senha || !confirmarSenha || !telefone || !bairro || !rua || !numero || !cpf) {
-      return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios.' });
+    if (!nome || !bairro || !rua || !numero) {
+        const error = new Error('Todos os campos são obrigatórios.');
+        error.statusCode = 400;
+        throw error;
     }
 
     // Verificação de email válido
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        return res.status(400).json({ success: false, message: 'Email inválido.' });
+        const error = new Error('Email inválido.');
+        error.statusCode = 400;
+        throw error;
     }
 
     // Verificação de senhas iguais
-    if (senha !== confirmarSenha) {
-        return res.status(400).json({ success: false, message: 'As senhas não coincidem.' });
+    if (senha !== confirmarSenha || !senha || !confirmarSenha) {
+        const error = new Error('As senhas não coincidem.');
+        error.statusCode = 400;
+        throw error;
     }
 
     // Verificação de CPF (formato básico)
     const cpfLimpo = cpf.replace(/\D/g, '');
     if (cpfLimpo.length !== 11) {
-        return res.status(400).json({ success: false, message: 'CPF inválido.' });
+        const error = new Error('CPF inválido.');
+        error.statusCode = 400;
+        throw error;
     }
 
     // Verificação de telefone (formato básico)
     const telefoneLimpo = telefone.replace(/\D/g, '');
     if (telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
-        return res.status(400).json({ success: false, message: 'Telefone inválido.' });
+        const error = new Error('Telefone inválido.');
+        error.statusCode = 400;
+        throw error;
     }
 
-    // Se todas as verificações passarem, continua com o código existente
-    const filePath = path.join(__dirname, 'data', 'users.json');
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error('Erro ao ler o arquivo JSON:', err);
-            return res.status(500).json({ success: false, message: 'Erro ao processar o cadastro.' });
-        }
+    return { cpfLimpo, telefoneLimpo };
+}
 
+// Rota POST para cadastrar um novo user e salva-lo no JSON
+app.post('/users', (req, res) => {
+    try {
+        const { cpfLimpo, telefoneLimpo } = validateData(req.body);
+        const { nome, email, senha, bairro, rua, numero } = req.body;
+        const filePath = path.join(__dirname, 'data', 'users.json');
 
-        const users = JSON.parse(data);
-
-        const novoUser = {
-            id: users.length + 1,
-            nome: nome,
-            email: email,
-            senha: senha,
-            telefone: telefoneLimpo,
-            endereco: {
-                bairro: bairro,
-                rua: rua,
-                numero: numero
-            },
-            cpf: cpfLimpo,
-            posts: [],
-            profileImage: 'public/img/EcoCity.png' // Adicionando imagem padrão
-        };
-
-        users.push(novoUser);
-
-
-        fs.writeFile(filePath, JSON.stringify(users, null, 2), (err) => {
+        fs.readFile(filePath, 'utf8', (err, data) => {
             if (err) {
-                console.error('Erro ao escrever no arquivo JSON:', err);
-                return res.status(500).json({ success: false, message: 'Erro ao salvar o usuário.' });
+                console.error('Erro ao ler o arquivo JSON:', err);
+                return res.status(500).json({ success: false, message: 'Erro ao processar o cadastro.' });
             }
 
+            const users = JSON.parse(data);
+            const novoUser = {
+                id: Math.floor(Math.random() * 900000000000) + 100000000000,
+                nome,
+                email,
+                senha,
+                telefone: telefoneLimpo,
+                endereco: {
+                    bairro,
+                    rua,
+                    numero,
+                },
+                cpf: cpfLimpo,
+                posts: [],
+                profileImage: '/img/EcoCity.png'
+            };
 
-            return res.status(200).json({ success: true, message: 'Usuário cadastrado com sucesso!' });
+            users.push(novoUser);
+            const response = escreveNoJson(users, filePath);
+            return res.status(200).json(response);
         });
-    });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || 'Erro interno do servidor',
+        });
+    }
 });
 
 // Rota POST para login
 app.post('/login', (req, res) => {
-  const { email, senha } = req.body;
+    const { email, senha } = req.body;
 
-  if (!email || !senha) {
-      return res.status(400).json({ success: false, message: 'Email e senha são obrigatórios.' });
-  }
+    if (!email || !senha) {
+        return res.status(400).json({ success: false, message: 'Email e senha são obrigatórios.' });
+    }
 
-  const filePath = path.join(__dirname, 'data', 'users.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-          console.error('Erro ao ler o arquivo JSON:', err);
-          return res.status(500).json({ success: false, message: 'Erro ao processar o login.' });
-      }
+    const filePath = path.join(__dirname, 'data', 'users.json');
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Erro ao ler o arquivo JSON:', err);
+            return res.status(500).json({ success: false, message: 'Erro ao processar o login.' });
+        }
 
-      const users = JSON.parse(data);
-      const user = users.find(u => u.email === email && u.senha === senha);
+        const users = JSON.parse(data);
+        const user = users.find(u => u.email === email && u.senha === senha);
 
-      if (!user) {
-          return res.status(401).json({ success: false, message: 'Email ou senha incorretos.' });
-      }
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Email ou senha incorretos.' });
+        }
 
-      // Salvar dados do usuário na sessão
-      req.session.userId = user.id;
-      req.session.userEmail = user.email;
+        // Salvar dados do usuário na sessão
+        req.session.userId = user.id;
+        req.session.userEmail = user.email;
 
-      return res.status(200).json({ 
-          success: true, 
-          message: 'Login realizado com sucesso!',
-          userId: user.id 
-      });
-  });
+        return res.status(200).json({
+            success: true,
+            message: 'Login realizado com sucesso!',
+            userId: user.id
+        });
+    });
 });
 
 // Middleware de autenticação
 const authMiddleware = (req, res, next) => {
-  // Verifica tanto a sessão quanto o header
-  const userId = req.session.userId || req.headers['user-id'];
-  
-  if (!userId) {
-      return res.status(401).json({ success: false, message: 'Não autorizado' });
-  }
+    // Verifica tanto a sessão quanto o header
+    const userId = req.session.userId || req.headers['user-id'];
 
-  const filePath = path.join(__dirname, 'data', 'users.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-          return res.status(500).json({ success: false, message: 'Erro ao verificar autenticação' });
-      }
+    if (!userId) {
+        return res.status(401).json({ success: false, message: 'Não autorizado' });
+    }
 
-      const users = JSON.parse(data);
-      const user = users.find(u => u.id === parseInt(userId));
+    const filePath = path.join(__dirname, 'data', 'users.json');
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Erro ao verificar autenticação' });
+        }
 
-      if (!user) {
-          return res.status(401).json({ success: false, message: 'Usuário não encontrado' });
-      }
+        const users = JSON.parse(data);
+        const user = users.find((u) => u.id === parseInt(userId));
 
-      req.user = user;
-      next();
-  });
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Usuário não encontrado' });
+        }
+
+        req.user = user;
+        next();
+    });
 };
 
 // Rota POST para cadastrar um novo post
-app.post('/posts', authMiddleware, (req, res) => {
-  const { titulo, descricao, imagem } = req.body;
+app.post('/posts', authMiddleware, async (req, res) => {
+    const { titulo, descricao, imagem } = req.body;
 
-  // Verifica campos obrigatórios
-  if (!titulo || !descricao || !imagem) {
-      return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios.' });
-  }
+    if (!titulo || !descricao || !imagem) {
+        return res.status(400).json({
+            success: false,
+            message: 'Todos os campos são obrigatórios.'
+        });
+    }
 
-  // Lê o arquivo de usuários para atualizar os posts
-  const usersFilePath = path.join(__dirname, 'data', 'users.json');
-  fs.readFile(usersFilePath, 'utf8', (err, data) => {
-      if (err) {
-          console.error('Erro ao ler arquivo de usuários:', err);
-          return res.status(500).json({ success: false, message: 'Erro ao processar a requisição.' });
-      }
+    try {
+        const data = await fs.promises.readFile(path.join(__dirname, 'data', 'users.json'), 'utf8');
+        const users = JSON.parse(data);
+        const userIndex = users.findIndex((u) => u.id === req.user.id);
 
-      let users = JSON.parse(data);
-      const userIndex = users.findIndex(u => u.id === req.user.id);
+        const novoPost = {
+            id: users[userIndex].posts.length + 1,
+            titulo,
+            descricao,
+            imagem,
+            data: new Date().toISOString(),
+            userId: req.user.id,
+            autorNome: req.user.nome,
+            autorImagem: req.user.profileImage
+        };
 
-      // Cria o novo post
-      const novoPost = {
-        id: req.user.posts.length + 1,
-        titulo,
-        descricao,
-        imagem,
-        data: new Date().toISOString(),
-        userId: req.user.id,
-        autorNome: req.user.nome,
-        autorImagem: req.user.profileImage // Adicionando a imagem do autor
-    };
+        users[userIndex].posts.push(novoPost);
+        await fs.promises.writeFile(path.join(__dirname, 'data', 'users.json'), JSON.stringify(users, null, 2));
 
-      // Adiciona o post ao array de posts do usuário
-      users[userIndex].posts.push(novoPost);
-
-      // Salva as alterações no arquivo de usuários
-      fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (err) => {
-          if (err) {
-              console.error('Erro ao salvar post:', err);
-              return res.status(500).json({ success: false, message: 'Erro ao salvar o post.' });
-          }
-
-          return res.status(200).json({ 
-              success: true, 
-              message: 'Post criado com sucesso!',
-              post: novoPost 
-          });
-      });
-  });
+        return res.status(200).json({
+            success: true,
+            message: 'Post criado com sucesso!',
+            post: novoPost
+        });
+    } catch (error) {
+        console.error('Erro ao processar post:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Erro ao processar o post.'
+        });
+    }
 });
 
 // Rota para buscar todos os posts
 app.get('/api/all-posts', (req, res) => {
     const usersFilePath = path.join(__dirname, 'data', 'users.json');
-    
+
     fs.readFile(usersFilePath, 'utf8', (err, data) => {
         if (err) {
             console.error('Erro ao ler arquivo de usuários:', err);
@@ -321,13 +301,11 @@ app.get('/api/all-posts', (req, res) => {
 
         const users = JSON.parse(data);
         // Coleta todos os posts de todos os usuários
-        const allPosts = users.reduce((posts, user) => {
-            return posts.concat(user.posts.map(post => ({
-                ...post,
-                autorNome: user.nome,
-                autorImagem: user.profileImage // Adicionando a imagem do autor
-            })));
-        }, []);
+        const allPosts = users.reduce((posts, user) => posts.concat(user.posts.map((post) => ({
+            ...post,
+            autorNome: user.nome,
+            autorImagem: user.profileImage, // Adicionando a imagem do autor
+        }))), []);
 
         // Ordena os posts por data, do mais recente para o mais antigo
         allPosts.sort((a, b) => new Date(b.data) - new Date(a.data));
@@ -346,18 +324,18 @@ app.get('/api/user-data', authMiddleware, (req, res) => {
             telefone: req.user.telefone,
             endereco: req.user.endereco,
             posts: req.user.posts,
-            profileImage: req.user.profileImage // Adicionando a imagem de perfil
-        }
+            profileImage: req.user.profileImage, // Adicionando a imagem de perfil
+        },
     });
 });
 
 // Rota para buscar apenas os posts do usuário logado
 app.get('/api/user-posts', authMiddleware, (req, res) => {
-  // Retorna array de posts do usuário
-  res.json({
-      success: true,
-      posts: req.user.posts
-  });
+    // Retorna array de posts do usuário
+    res.json({
+        success: true,
+        posts: req.user.posts,
+    });
 });
 
 // Rota para atualizar a imagem de perfil do usuário
@@ -375,10 +353,10 @@ app.post('/api/update-profile-image', authMiddleware, (req, res) => {
         }
 
         // Converte o JSON para objeto JavaScript
-        let users = JSON.parse(data);
+        const users = JSON.parse(data);
         // Encontra o índice do usuário atual
-        const userIndex = users.findIndex(u => u.id === req.user.id);
-        
+        const userIndex = users.findIndex((u) => u.id === req.user.id);
+
         // Verifica se o usuário foi encontrado
         if (userIndex === -1) {
             return res.json({ success: false, message: 'Usuário não encontrado' });
@@ -413,10 +391,10 @@ app.post('/api/update-user-data', authMiddleware, (req, res) => {
         }
 
         // Converte o JSON para objeto JavaScript
-        let users = JSON.parse(data);
+        const users = JSON.parse(data);
         // Encontra o índice do usuário atual
-        const userIndex = users.findIndex(u => u.id === req.user.id);
-        
+        const userIndex = users.findIndex((u) => u.id === req.user.id);
+
         // Verifica se o usuário foi encontrado
         if (userIndex === -1) {
             return res.json({ success: false, message: 'Usuário não encontrado' });
@@ -447,7 +425,7 @@ app.post('/logout', (req, res) => {
             console.error('Erro ao destruir sessão:', err);
             return res.status(500).json({ success: false, message: 'Erro ao fazer logout' });
         }
-        
+
         // Retorna sucesso se a sessão foi destruída
         res.json({ success: true, message: 'Logout realizado com sucesso' });
     });
