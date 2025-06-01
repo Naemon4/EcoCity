@@ -1,0 +1,118 @@
+.profile-container {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.profile-info {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+
+}
+
+.profile-info input {
+
+    width: 100%;
+
+}
+
+.profile-info p {
+
+    margin: 10px;
+    font-weight: 700;
+
+}
+
+.profile-info p span {
+
+    font-weight: 400;
+}
+
+.profile-image {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.change-photo {
+    background-color: #75a65e;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.change-photo:hover {
+    background-color: #5c8349;
+}
+
+#profileForm input {
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#profileForm button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #75a65e;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+#confirmDeleteContainer {
+
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+#dontDelete {
+
+    margin-top: 50px;
+    padding: 10px 20px;
+    background-color: #75a65e;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+
+}
+
+#deletarConta,
+#confirmDelete {
+
+    margin-top: 50px;
+    padding: 10px 20px;
+    background-color: #d60000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+
+}
+
+#profileForm button:hover {
+    background-color: #5c8349;
+}

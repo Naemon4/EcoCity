@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/loginStyles.css">
+    <link rel="stylesheet" href="../css/generalStyles.css">
+    <link rel="stylesheet" href="../css/fontStyles.css">
+    <script src="../js/criarHeaderFooter.js"></script>
+    <title>Login</title>
+</head>
+<body>
+
+    <header id="header" onload="criarHeader()"></header>
+    
+
+    <main>
+
+        <h2>Login</h2>
+
+        <section>
+
+            <form id="loginForm" action="/api/users/login" method="post">
+
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
+    
+                <label for="senha">Senha</label>
+                <input type="password" name="senha" id="password" required>
+
+                <input type="submit" value="Logar">
+    
+            </form>
+            
+            <p>Não tem uma conta? <a href="/registro">Cadastre-se</a></p>
+
+        </section>
+        
+    </main>
+
+    
+    <footer id="footer"></footer>
+
+</body>
+<script src="../js/loginScript.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        criarHeader();
+        criarFooter();
+    });
+</script>
+<script src="../js/logoutScript.js"></script>
+</html>

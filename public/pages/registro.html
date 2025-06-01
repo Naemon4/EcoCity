@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/registroStyles.css">
+    <link rel="stylesheet" href="../css/generalStyles.css">
+    <link rel="stylesheet" href="../css/fontStyles.css">
+    <title>Registro</title>
+</head>
+<body>
+    <header id="header"></header>
+    
+    <main>
+        <h2>Registre-se na EcoCity!</h2>
+
+        <section>
+            <form>
+                <label for="nome">Nome completo:</label>
+                <input type="text" name="nome" id="nomeInput" required>
+        
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="emailInput" required>
+    
+                <label for="senha">Senha:</label>
+                <input type="password" name="senha" id="senhaInput">
+        
+                <label for="confirmarSenha">Confirmar Senha:</label>
+                <input type="password" name="confirmarSenha" id="conSenhaInput" required>
+        
+                <label for="telefone">Telefone:</label>
+                <input type="tel" name="telefone" id="telefoneInput" required>
+        
+                <label for="bairro">Bairro:</label>
+                <input type="text" name="bairro" id="bairroInput" required>
+        
+                <label for="rua">Rua:</label>
+                <input type="text" name="rua" id="ruaInput" required>
+        
+                <label for="numero">Número:</label>
+                <input type="text" name="numero" id="numeroInput" required>
+        
+                <label for="cpf">CPF:</label>
+                <input type="text" name="cpf" id="cpfInput" required>
+        
+                <input type="submit" value="Registrar">
+            </form>
+            <p>Já tem uma conta? Vá para o <a href="/login">login</a></p>
+        </section>
+    </main>
+    <footer id="footer"></footer>
+
+    <!-- Scripts no final do body para garantir que o DOM esteja carregado -->
+    <script src="../js/criarHeaderFooter.js"></script>
+    <script src="../js/registroScript.js"></script>
+    <script src="../js/logoutScript.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            criarHeader();
+            criarFooter();
+        });
+    </script>
+</body>
+</html>

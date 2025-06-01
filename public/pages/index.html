@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/indexStyle.css">
+    <link rel="stylesheet" href="../css/generalStyles.css">
+    <link rel="stylesheet" href="../css/fontStyles.css">
+    <script src="../js/criarHeaderFooter.js"></script>
+    <title>Postagens</title>
+</head>
+<body>
+
+    <header id="header" onload="criarHeader()"></header>
+    
+
+    <main>
+
+        <div id="postsContainer">
+            <!-- Posts serão inseridos aqui pelo JavaScript -->
+        </div>
+        
+    </main>
+
+    
+    <footer id="footer"></footer>
+
+</body>
+<script src="../js/indexScript.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        criarHeader();
+        criarFooter();
+    });
+</script>
+<script src="../js/logoutScript.js"></script>
+</html>
