@@ -21,7 +21,8 @@ document.querySelector('form').addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include' // 👈 PARA SALVAR O COOKIE
         });
 
         const registerResult = await registerResponse.json();
@@ -38,15 +39,13 @@ document.querySelector('form').addEventListener('submit', async (e) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(loginData)
+                body: JSON.stringify(loginData),
+                credentials: 'include' // 👈 PARA SALVAR O COOKIE
             });
 
             const loginResult = await loginResponse.json();
 
             if (loginResult.success) {
-                // Salvar ID do usuário no localStorage e sessionStorage
-                localStorage.setItem('userId', loginResult.userId);
-                sessionStorage.setItem('userId', loginResult.userId);
                 // Redirecionar para a página principal
                 window.location.href = '/';
             } else {

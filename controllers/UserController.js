@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Post = require('../models/Post'); // Adicione esta linha
 const bcrypt = require('bcrypt');
 const path = require('path');
+const { error } = require('console');
 
 // Controlador responsável por gerenciar todas as operações relacionadas aos usuários
 class UserController {
@@ -60,68 +61,42 @@ class UserController {
     // Valida as credenciais e cria uma sessão para o usuário
     static async login(req, res) {
         try {
-            console.log('Corpo da requisição:', req.body); // Log dos dados recebidos
-            
             const { email, senha } = req.body;
             if (!email || !senha) {
-                console.log('Campos faltando - Email:', email, 'Senha:', senha);
                 return res.status(400).json({ success: false, message: 'Email e senha são obrigatórios.' });
             }
-        
-            console.log('Buscando usuário no banco...');
+
             const user = await User.findOne({ where: { email } });
-            
-            if (!user) {
-                console.log('Usuário não encontrado para email:', email);
+
+            if (!user || !(await bcrypt.compare(senha, user.senha))) {
                 return res.status(401).json({ success: false, message: 'Email ou senha incorretos.' });
             }
-        
-            console.log('Comparando senhas...');
-            const isPasswordValid = await bcrypt.compare(senha, user.senha);
-            if (!isPasswordValid) {
-                console.log('Senha inválida para usuário:', email);
-                return res.status(401).json({ success: false, message: 'Email ou senha incorretos.' });
-            }
-        
-            console.log('Iniciando regeneração da sessão...');
-            // Create session
+
             req.session.regenerate((err) => {
                 if (err) {
-                    console.error('Erro ao regenerar a sessão:', err);
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Erro ao processar o login: falha na regeneração da sessão.',
-                        errorDetails: err.message
-                    });
+                    console.error('Erro ao regenerar sessão:', err);
+                    return res.status(500).json({ success: false, message: 'Erro ao iniciar sessão.' });
                 }
-                console.log('Sessão regenerada. Definindo userId e userEmail...');
-                req.session.userId = user.id;
-                req.session.userEmail = user.email;
 
-                req.session.save((saveErr) => {
-                    if (saveErr) {
-                        console.error('Erro ao salvar a sessão:', saveErr);
-                        return res.status(500).json({
-                            success: false,
-                            message: 'Erro ao processar o login: falha ao salvar a sessão.',
-                            errorDetails: saveErr.message
-                        });
+                // ✅ Salvando os dados do usuário na sessão
+                req.session.user = {
+                    id: user.id,
+                    email: user.email
+                };
+                req.session.userId = user.id;
+
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Erro ao salvar sessão:', err);
+                        return res.status(500).json({ success: false, message: 'Erro ao salvar sessão.' });
                     }
-                    console.log('Sessão salva com sucesso. Redirecionando...');
-                    return res.status(200).json({
-                        success: true,
-                        message: 'Login realizado com sucesso!',
-                        userId: user.id
-                    });
+
+                    return res.status(200).json({ success: true, message: 'Login bem-sucedido' });
                 });
             });
         } catch (error) {
-            console.error('ERRO NO LOGIN:', error);
-            return res.status(500).json({ 
-                success: false, 
-                message: 'Erro ao processar o login.',
-                errorDetails: error.message
-            });
+            console.error('Erro no login:', error);
+            return res.status(500).json({ success: false, message: 'Erro interno do servidor.' });
         }
     }
 
@@ -129,7 +104,7 @@ class UserController {
     // Retorna informações pessoais e de endereço do usuário
     static async getUserData(req, res) {
         try {
-            const user = await User.findByPk(req.user.id, {
+            const user = await User.findByPk(req.session.user.id, {
                 attributes: ['nome', 'email', 'telefone', 'bairro', 'rua', 'numero', 'profileImage']
             });
 
@@ -162,7 +137,7 @@ class UserController {
     static async updateUserData(req, res) {
         try {
             const { nome, email, telefone, endereco } = req.body;
-            const user = await User.findByPk(req.user.id);
+            const user = await User.findByPk(req.session.user.id);
 
             if (!user) {
                 return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
@@ -191,13 +166,13 @@ class UserController {
                 return res.status(400).json({ success: false, message: 'Nenhuma imagem enviada.' });
             }
 
-            const user = await User.findByPk(req.user.id);
+            const user = await User.findByPk(req.session.user.id);
             if (!user) {
                 return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
             }
 
             const profileImageFile = req.files.profileImage;
-            const fileName = `profile_${req.user.id}_${Date.now()}${path.extname(profileImageFile.name)}`;
+            const fileName = `profile_${req.session.user.id}_${Date.now()}${path.extname(profileImageFile.name)}`;
             const uploadPath = path.join(process.cwd(), 'public', 'img', 'uploads', fileName);
 
             await profileImageFile.mv(uploadPath);
@@ -217,17 +192,29 @@ class UserController {
     //Métdodo para deletar a conta do usuário
     static async deleteUser(req, res) {
         try {
-            const userId = req.user.id; // Ou req.params.id se estiver usando parâmetro de rota
+            const userId = req.session.userId;
 
-            // 1. Primeiro deletar posts associados ao usuário (se necessário)
-            await Post.deleteMany({ author: userId });
+            const userToDelete = await User.findByPk(userId);
 
-            // 2. Depois deletar o usuário
-            const deletedUser = await User.findByIdAndDelete(userId);
-
-            if (!deletedUser) {
+            if (!userToDelete) {
                 return res.status(404).json({ message: 'Usuário não encontrado' });
             }
+
+            // 1. Primeiro deletar posts associados ao usuário (se necessário)
+            await Post.destroy({
+                where: { userId: userId }
+            });
+
+            // 2. Depois deletar o usuário
+            await userToDelete.destroy()
+
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error('Erro ao destruir sessão após exclusão de conta:', err);
+                    // Não impede a exclusão da conta, mas loga o erro
+                }
+            });
+            res.status(200).json({ message: 'Usuário e todas as postagens associadas excluídos com sucesso.' });
 
             res.status(200).json({ message: 'Conta deletada com sucesso' });
         } catch (error) {
@@ -239,14 +226,26 @@ class UserController {
     // Método para realizar o logout do usuário
     // Destrói a sessão atual do usuário
     static async logout(req, res) {
-        req.session.destroy((err) => {
-            if (err) {
-                console.error('Erro ao destruir sessão:', err);
-                return res.status(500).json({ success: false, message: 'Erro ao fazer logout' });
+        try {
+
+            if (req.session.user.id == undefined) {
+                throw new err("não está logado");
             }
-            res.json({ success: true, message: 'Logout realizado com sucesso' });
-        });
+
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error('Erro ao destruir sessão:', err);
+                    throw res.status(500).json({ success: false, message: 'Erro ao fazer logout' });
+                }
+                res.json({ success: true, message: 'Logout realizado com sucesso' });
+            });
+        } catch (err) {
+            console.error('Erro ao fazer logout:', err);
+            res.status(500).json({ message: 'Erro para deletar a conta' });
+        }
+        
     }
+
 }
 
 module.exports = UserController;

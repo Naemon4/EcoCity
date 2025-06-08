@@ -20,7 +20,7 @@ class PostController {
                 titulo,
                 descricao,
                 imagem: `/img/uploads/${fileName}`,
-                userId: req.user.id  // Aqui está a correção: usando req.user ao invés de user
+                userId: req.session.user.id
             });
 
             const postWithUser = await Post.findByPk(post.id, {

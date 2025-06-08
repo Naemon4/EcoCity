@@ -5,49 +5,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const imageUpload = document.getElementById('imageUpload');
   const profileForm = document.getElementById('profileForm');
 
-  // Função para comprimir a imagem antes do upload
-  const compressImage = (file) => new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onload = (e) => {
-      const img = new Image();
-      img.src = e.target.result;
-
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
-        let { width } = img;
-        let { height } = img;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else if (height > MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height;
-          height = MAX_HEIGHT;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
-      };
-    };
-  });
-
   // Carrega os dados do usuário ao iniciar
   try {
     const response = await fetch('/api/users/user-data', {
       headers: {
         'Content-Type': 'application/json',
-        'user-id': localStorage.getItem('userId'),
       },
+      credentials: 'include' // 👈 PARA SALVAR O COOKIE
     });
 
     const data = await response.json();
@@ -65,6 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (data.user.profileImage) {
         profileImage.src = data.user.profileImage;
       }
+    } else {
+
+      window.location.replace('/');
+
     }
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
@@ -80,10 +48,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const response = await fetch('/api/users/update-profile-image', {
           method: 'POST',
-          headers: {
-            'user-id': localStorage.getItem('userId')
-          },
-          body: formData
+          body: formData,
+          credentials: 'include' // 👈 PARA SALVAR O COOKIE
         });
 
         const result = await response.json();
@@ -125,9 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'user-id': localStorage.getItem('userId'),
         },
         body: JSON.stringify(userData),
+        credentials: 'include' // 👈 PARA SALVAR O COOKIE
       });
 
       const result = await response.json();

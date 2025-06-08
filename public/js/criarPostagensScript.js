@@ -4,23 +4,15 @@ document.querySelector('form').addEventListener('submit', async (e) => {
     const formData = new FormData(e.target);
 
     try {
-        const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
-        if (!userId) {
-            alert('Você precisa estar logado para criar um post.');
-            window.location.href = '/login';
-            return;
-        }
 
-        formData.append('userId', userId);
-
+        //puxando a rota de criar posts
         const response = await fetch('/api/posts/create', {
             method: 'POST',
-            headers: {
-                'user-id': userId
-            },
-            body: formData
+            body: formData,
+            credentials: 'include' // 👈 PARA SALVAR O COOKIE
         });
 
+        // Converte a resposta para JSON
         const result = await response.json();
 
         if (result.success) {
@@ -34,12 +26,3 @@ document.querySelector('form').addEventListener('submit', async (e) => {
         alert('Erro ao criar post');
     }
 });
-
-const fileName = `post_${Date.now()}.jpg`;
-const filePath = path.join(__dirname, '../public/img/uploads', fileName);
-fs.writeFileSync(filePath, buffer);
-const data = {
-    titulo: formData.get('titulo'),
-    descricao: formData.get('descricao'),
-    imagem: `/img/uploads/${fileName}`
-};

@@ -1,3 +1,36 @@
+/* Animação para deslizar e aparecer */
+@keyframes slideFadeInTop {
+    from {
+      opacity: 0;
+      transform: translateY(-20px); /* Para o header, entra de cima */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideFadeInBottom {
+    from {
+      opacity: 0;
+      transform: translateY(20px); /* Para o footer, entra de baixo */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeInMain {
+    from {
+      opacity: 0;
+      transform: translateY(10px); /* Entra suavemente de baixo */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
 *{
 
     margin: 0;
@@ -22,6 +55,7 @@ main{
     justify-content: center;
     align-items: center;
     padding: 20px 0;
+    animation: fadeInMain 0.4s ease-out;
 
 }
 
@@ -49,12 +83,16 @@ a:hover{
 hr{
     height: 2px;
     background-color: black;
+    box-shadow: 0px 0px 14px #5d6085;
+
 }
 
 header{
 
     background-color: #c9e4c6;
     padding-top: 0;
+    animation: slideFadeInTop 0.2s ease-out;
+    box-shadow: 0px 0px 14px #5d6085;
     
 }
 
@@ -152,6 +190,8 @@ footer{
 
     background-color: #c9e4c6;
     margin-top: auto;
+    animation: slideFadeInBottom 0.2s ease-out;
+    box-shadow: 0px 0px 14px #5d6085;
 
 }
 
@@ -185,7 +225,7 @@ input:focus{
     color: black;
 
     transform: scale(1.02);
-    box-shadow: 0 0 10px rgba(32, 80, 17, 0.5);
+    box-shadow: 0 0 10px #5d6085;
     outline: none;
 
 }
@@ -203,6 +243,6 @@ textarea:focus{
     color: black;
 
     transform: scale(1.02); 
-    box-shadow: 0 0 10px rgba(32, 80, 17, 0.5);
+    box-shadow: 0 0 10px #5d6085;
     outline: none;
 }

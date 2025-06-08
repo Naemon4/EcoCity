@@ -1,5 +1,7 @@
-// Aguarda o DOM ser completamente carregado
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  //tem q esperar o criar header acontecer para o botão funcionar
+  await criarHeader();
+
   // Busca o botão de logout pelo ID
   const logoutBtn = document.getElementById('logoutBtn');
 
@@ -14,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include' // 👈 PARA SALVAR O COOKIE
         });
 
         // Converte a resposta para JSON
@@ -21,9 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Se o logout foi bem sucedido
         if (result.success) {
-          // Remove o ID do usuário do localStorage
-          localStorage.removeItem('userId');
           // Redireciona para a página de login
+          localStorage.setItem('isUserLoggedIn', "false");
           window.location.href = '/';
         } else {
           // Mostra mensagem de erro caso o logout falhe

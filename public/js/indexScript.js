@@ -1,3 +1,4 @@
+//evento para carregar os posts
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const response = await fetch('/api/posts/all-posts');
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const data = new Date(post.data).toLocaleDateString('pt-BR');
 
+        //cria os posts no html
         postSection.innerHTML = `
                     <h3>${post.titulo}</h3>
                     <p class="autor">Postado por: ${post.autorNome}</p>
@@ -20,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p class="descricao">${post.descricao}</p>
                 `;
 
-        // Adiciona o evento de clique
+        //Adiciona o evento de click e o link para o post
         postSection.style.cursor = 'pointer';
         postSection.addEventListener('click', () => {
           window.location.href = `/post?id=${post.id}&userId=${post.userId}`;

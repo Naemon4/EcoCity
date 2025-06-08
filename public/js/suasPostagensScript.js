@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const response = await fetch('/api/posts/user-posts', {
       headers: {
         'Content-Type': 'application/json',
-        'user-id': localStorage.getItem('userId'),
       },
+      credentials: 'include' // 👈 PARA SALVAR O COOKIE
     });
 
     const data = await response.json();
@@ -29,6 +29,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p class="data">Publicado em: ${new Date(post.data).toLocaleDateString()}</p>
                     `;
 
+          postElement.style.cursor = 'pointer';
+          postElement.addEventListener('click', () => {
+            window.location.href = `/post?id=${post.id}&userId=${post.userId}`;
+          });
+
           // Adiciona o post ao container
           postsContainer.appendChild(postElement);
         });
@@ -36,6 +41,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Mensagem quando não há posts
         postsContainer.innerHTML = '<p>Você ainda não tem postagens.</p>';
       }
+    } else {
+
+      window.location.replace('/');
+
     }
   } catch (error) {
     // Tratamento de erro

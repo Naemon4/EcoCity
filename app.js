@@ -11,15 +11,16 @@ const postRoutes = require('./routes/postRoutes');
 const app = express();
 const PORT = 3000;
 
-// Configuração da sessão
+// Configuração da sessão, teria q ser mudado por questões de segurança quando for rodar o app fora do local
 app.use(session({
     secret: 'ecocity2025',
-    resave: true,
     saveUninitialized: true,
+    resave: true,
     cookie: {
-        secure: true,
+        secure: false, // true somente em HTTPS
+        httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true
+        sameSite: 'lax' // ✅ recomendado para evitar perda de sessão em navegadores
     }
 }));
 
@@ -60,6 +61,14 @@ app.get('/editarPerfil', (req, res) => {
 
 app.get('/criarPost', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'pages', 'criarPostagens.html'));
+});
+
+app.get('/api/teste-sessao', (req, res) => {
+    if (req.session && req.session.user) {
+        res.json({ logado: true, user: req.session.user });
+    } else {
+        res.json({ logado: false });
+    }
 });
 
 // Rotas da API

@@ -1,9 +1,10 @@
 const User = require('../models/User');
 
+//autenticador do usuário com base no model
+//não colocar ele para retornar o 'success true', por algum motivo quebra o codigo e nn faz diferença nenhuma
 const authMiddleware = async (req, res, next) => {
-    console.log('Middleware de autenticação acionado. Session userId:', req.session.userId);
-    // Verifica se o userId está na sessão ou nos cabeçalhos
-    const userId = req.session.userId || req.headers['user-id'];
+    const userId = req.session.userId
+    console.log('Middleware de autenticação acionado. Session userId:', userId);
 
     if (!userId) {
         return res.status(401).json({ success: false, message: 'Não autorizado: Usuário não logado.' });
@@ -13,7 +14,6 @@ const authMiddleware = async (req, res, next) => {
         const user = await User.findByPk(userId);
 
         if (!user) {
-            // Se o usuário não for encontrado, limpa a sessão para evitar loops
             req.session.destroy(err => {
                 if (err) {
                     console.error('Erro ao destruir a sessão:', err);
@@ -22,7 +22,6 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Não autorizado: Usuário não encontrado.' });
         }
 
-        // Anexa o objeto do usuário à requisição
         req.user = user;
         next();
     } catch (error) {

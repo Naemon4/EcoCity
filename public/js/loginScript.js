@@ -7,18 +7,17 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     try {
         const response = await fetch('/api/users/login', {
             method: 'POST',
-            credentials: 'include', // Importante para sessões
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, senha })
+            body: JSON.stringify({ email, senha }),
+            credentials: 'include' // 👈 PARA SALVAR O COOKIE
         });
 
         const data = await response.json();
 
         if (data.success) {
             console.log('Login bem-sucedido no cliente. Tentando redirecionar...');
-            localStorage.setItem('userId', data.userId);
             window.location.replace('/');
             console.log('Redirecionamento iniciado no cliente.'); // Adicione esta linha
         } else {

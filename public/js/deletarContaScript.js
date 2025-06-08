@@ -1,3 +1,4 @@
+//evento para desaparecer com as opções de deletar a conta
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('deletarConta').addEventListener('click', async () => {
 
@@ -17,21 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('userId')}`
-                }
+                },
+                credentials: 'include' // 👈 PARA SALVAR O COOKIE
             });
-
-            console.log('Resposta recebida:', deleteResponse);
 
             if (!deleteResponse.ok) {
                 const errorData = await deleteResponse.json();
                 console.error('Erro do servidor:', errorData);
                 throw new Error(errorData.message || 'Falha ao deletar conta');
             }
-
-            // Limpar dados do usuário
-            localStorage.clear();
-            sessionStorage.clear();
 
             console.log('Redirecionando para a página inicial...');
             window.location.href = '/';
@@ -40,17 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro completo:', error);
             alert(`Erro: ${error.message}`);
 
-            // Opcional: reexibir o botão de confirmação
+            // se der erro, some com as opções de deletar a conta
             document.getElementById("deletarConta").style.display = "block";
             document.getElementById("confirmDeleteContainer").style.display = "none";
         }
     });
 });
 
+//evento para sumir com as opções de deletar a conta
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dontDelete').addEventListener('click', async () => {
 
-        document.getElementById("deletarConta").style.display = "inline-block"
+        document.getElementById("deletarConta").style.display = "block"
         document.getElementById("confirmDeleteContainer").style.display = "none"
 
     });
