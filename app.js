@@ -1,4 +1,6 @@
 const express = require('express');
+const helmet = require('helmet');
+const xss = require('xss-clean');
 const session = require('express-session');
 const path = require('path');
 const sequelize = require('./config/database');
@@ -10,6 +12,41 @@ const postRoutes = require('./routes/postRoutes');
 
 const app = express();
 const PORT = 3000;
+
+app.use(xss());
+
+// Aplica todos os middlewares padrão de segurança
+app.use(helmet());
+
+// Configura a política de segurança de conteúdo (CSP)
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "https://apis.google.com"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:"],
+            fontSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            frameAncestors: ["'none'"],
+        },
+    })
+);
+
+app.use(
+    helmet.crossOriginResourcePolicy({ policy: "same-origin" })
+);
+
+app.use(
+    helmet.frameguard({ action: 'deny' }) // Evita que sua página seja colocada em iframes
+);
+
+app.use(
+    helmet.hsts({ maxAge: 31536000, includeSubDomains: true }) // Força HTTPS por 1 ano
+);
+
+// Opcional: remove cabeçalho que identifica o servidor
+app.use(helmet.hidePoweredBy());
 
 // Configuração da sessão, teria q ser mudado por questões de segurança quando for rodar o app fora do local
 app.use(session({
@@ -23,6 +60,8 @@ app.use(session({
         sameSite: 'lax' // ✅ recomendado para evitar perda de sessão em navegadores
     }
 }));
+
+
 
 // Middleware para arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
